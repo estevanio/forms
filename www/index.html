@@ -26,25 +26,25 @@
         <ion-content>
             <form name="userForm" novalidate="">
                 <div class="list list-inset">
-                    <li ng-repeat="i in items" class="item item-input" ng-class="{item-select: i.type==select, item-toggle: i.type == checkbox, item-icon-right: i.type == picture||location} ">
+                    <li ng-repeat="i in items" class="item item-input" ng-class="{'item-select': i.type=='select', 'item-toggle': i.type == 'checkbox', 'item-icon-right': i.type == 'picture'||'location'} ">
                         <!-- adds title -->
                         <span class="input-label">{{i.label | titlecase}}: </span>
                         <!-- adds basic inputs -->
-                        <input ng-if="i.type!=select && i.type!=checkbox && i.type!=picture && i.type!=location" type="{{i.type}}">
+                        <input ng-if="i.type!='select' && i.type!='checkbox' && i.type!='picture' && i.type!='location'" type="{{i.type}}">
                         <!-- add select inputs -->
-                        <select ng-if="i.type==select">
+                        <select ng-if="i.type=='select'">
                             <option ng-repeat="op in i.options">{{op}}</option>
                         </select>
                         <!-- add toggle inputs -->
-                        <label ng-if="i.type==checkbox" class="toggle toggle-positive">
+                        <label ng-if="i.type=='checkbox'" class="toggle toggle-positive">
                             <input type="checkbox">
                             <div class="track">
                                 <div class="handle"></div>
                             </div>
                         </label>
                         <!-- add picture & location icons -->
-                        <i ng-if="i.type==location" class="icon ion-ios-location"></i> 
-                        <i ng-if="i.type==picture" class="icon ion-android-camera"></i> 
+                        <i ng-if="i.type=='location'" class="icon ion-ios-location"></i> 
+                        <i ng-if="i.type=='picture'" class="icon ion-android-camera"></i> 
                     </li>
 
                 </div>
