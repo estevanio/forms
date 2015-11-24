@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+</head>
+
+<body ng-app="starter" ng-controller="AppCtrl">
+    <ion-pane>
+        <ion-header-bar class="bar-stable">
+            <h1 class="title">KITCHENSINK</h1>
+        </ion-header-bar>
+        <ion-content>
+            <form name="userForm" novalidate>
+                <div class="list list-inset">
+                    <li ng-repeat="i in items" class="item item-input" ng-class="{'item-select': i.type=='select', 'item-toggle': i.type == 'checkbox', 'item-icon-right': i.type == 'picture'||'location'} ">
+                        <!-- adds title -->
+                        <span class="input-label">{{i.label | titlecase}}: </span>
+                        <!-- adds basic inputs -->
+                        <input ng-if="i.type!='select' && i.type!='checkbox' && i.type!='picture' && i.type!='location'" type="{{i.type}}">
+                        <!-- add select inputs -->
+                        <select ng-if="i.type=='select'">
+                            <option ng-repeat="op in i.options">{{op}}</option>
+                        </select>
+                        <!-- add toggle inputs -->
+                        <label ng-if="i.type=='checkbox'" class="toggle toggle-positive">
+                            <input type="checkbox">
+                            <div class="track">
+                                <div class="handle"></div>
+                            </div>
+                        </label>
+                        <!-- add picture & location icons -->
+                        <i ng-if="i.type=='location'" class="icon ion-ios-location"></i> 
+                        <i ng-if="i.type=='picture'" class="icon ion-android-camera"></i> 
+                    </li>
+
+                </div>
+            </form>
+        </ion-content>
+    </ion-pane>
+</body>
+
+</html>
