@@ -3,8 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic'])
-
+angular.module('forms', ['ionic'])
 .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -18,8 +17,123 @@ angular.module('starter', ['ionic'])
     });
 })
 
-.filter('titlecase', function() {
-        return function(input) {
+.config(function($stateProvider, $urlRouterProvider) {
+    
+    $stateProvider
+        // route to show our basic form (/form)
+        .state('form', {
+            url: '/form/:cardId',
+            templateUrl: 'form.html',
+            controller: 'FormCtrl',
+            // abstract: true
+        })
+
+        .state('form.profile', {
+            url: '/profile',
+            templateUrl: 'wutdoode'
+        })
+
+    
+    // catch all route
+    $urlRouterProvider.otherwise('/form/0');
+})
+
+
+.controller('FormCtrl', function($scope, $stateParams, Card) {
+$scope.cards = [{
+  id: 0,
+  title: 'Arrived',
+  next: '1',
+  inputList:[{
+            label: 'email',
+            type: 'email',
+            name:'userEmail'}, 
+            {
+            label: 'website',
+            type: 'url',
+            name:'userSite'
+        }, {
+            label: 'Home Phone number',
+            type: 'tel',
+            name: 'home',
+        }, 
+        {
+            label: 'Cell Phone number',
+            type: 'tel',
+            name: 'cell',
+        }, {
+            label: 'Favorite Number',
+            type: 'number',
+            name: 'fav',
+        }, {
+            label: 'Time',
+            type: 'time',
+            name: 'time'
+        }, {
+            label: 'Birthday',
+            type: 'date',
+            name: 'dob'
+         }] //end inputs
+},//end first card
+{
+  id: 1,
+  title: '',
+  next: '',
+  inputList: [
+    {
+          label: 'username',
+          type: 'text', 
+          name:'username'
+      }
+  ]
+}
+];
+$scope.card=$scope.cards[$stateParams.cardId];
+
+           
+$scope.formData={}||$scope.formData;
+
+})          
+
+.factory('Card', [function(){
+    return [ {
+            label: 'email',
+            type: 'email',
+            name:'userEmail'
+        }, {
+            label: 'website',
+            type: 'url',
+            name:'userSite'
+        }, {
+            label: 'Home Phone number',
+            type: 'tel',
+            name: 'home',
+        }, 
+        {
+            label: 'Cell Phone number',
+            type: 'tel',
+            name: 'cell',
+        }, {
+            label: 'Favorite Number',
+            type: 'number',
+            name: 'fav',
+        }, {
+            label: 'Time',
+            type: 'time',
+            name: 'time'
+        }, {
+            label: 'Birthday',
+            type: 'date',
+            name: 'dob'
+         }//, {
+        //     label: 'local date time',
+        //     type: 'datetime-local'
+        // }
+    ];
+}])
+
+.filter('titlecase', [function() {
+return function(input) {
             var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
             input = input.toLowerCase();
             return input.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, function(match, index, title) {
@@ -35,61 +149,5 @@ angular.module('starter', ['ionic'])
                 return match.charAt(0).toUpperCase() + match.substr(1);
             });
         }
-})
+}])
 
-.controller('AppCtrl', function($scope) {
-    $scope.items = [{
-            label: 'username',
-            type: 'text'
-        }, {
-            label: 'email',
-            type: 'email'
-        }, {
-            label: 'website',
-            type: 'url'
-        }, {
-            label: 'Phone number',
-            type: 'tel'
-        }, {
-            label: 'Number',
-            type: 'number'
-        }, {
-            label: 'Time',
-            type: 'time'
-        }, {
-            label: 'date',
-            type: 'date'
-        }, {
-            label: 'local date time',
-            type: 'datetime-local'
-        },
-        // {label:'global date time', type:'datetime'},
-        {
-            label: 'Month',
-            type: 'month'
-        }, {
-            label: 'password',
-            type: 'password'
-        }, {
-            label: 'color',
-            type: 'color'
-        }, {
-            label: 'week',
-            type: 'week'
-        }, {
-            label: 'list select',
-            type: 'select',
-            options:['a','b','c']
-        }, {
-            label: 'toggler',
-            type: 'checkbox',
-        }, {
-            label: 'add image',
-            type: 'picture',
-        }, {
-            label: 'add location',
-            type: 'location',
-        }
-    ];
-
-})
