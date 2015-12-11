@@ -1,4 +1,12 @@
 {
   "name": "forms",
-  "app_id": "f447c6c7"
+  "app_id": "f447c6c7",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
+  ]
 }
