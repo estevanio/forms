@@ -1,8 +1,3 @@
-// Ionic Starter App
-
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
 angular.module('forms', ['ionic', 'firebase', 'custom'])
   .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
@@ -21,31 +16,52 @@ angular.module('forms', ['ionic', 'firebase', 'custom'])
 
   $stateProvider
   // route to show our basic form (/form)
-    .state('form', {
-    url: '/form/:item',
-    templateUrl: 'form.html',
-    controller: 'FormCtrl',
-  });
-  $urlRouterProvider.otherwise('/form/');
+    .state('stack', {
+      url: '/stack',
+      templateUrl: 'form.html',
+      controller: 'FormCtrl',
+    })
+    .state('stack.card', {
+      url: '/card/:phase',
+          templateUrl: 'es-view.html',
+          controller: 'CardCtrl'
+    });
+  $urlRouterProvider.otherwise('/stack/');
+})
+
+.controller('CardCtrl', function($scope, $stateParams, $state, $rootScope, Stack) {
+  $scope.card = Stack[$stateParams.phase];
+  console.log($stateParams.phase);
+  console.log($stateParams.phase);
+  $scope.nextPage=function  () {
+    $scope.$parent.prev = $scope.card.id;
+    $state.go('stack.card', {'phase': $scope.card.next});
+  };
+  $scope.prevPage=function  () {
+    $state.go('stack.card', {'phase': $scope.$parent.prev});
+  };
+
+  // $rootScope.$broadcast('card-loaded');
+
+
 })
 
 
-.controller('FormCtrl', function($scope, $stateParams, Stack, $firebaseObject) {
-  var ce = angular.element(document.querySelector('#contentelem'));
-  $scope.formData={};
+.controller('FormCtrl', function($scope, $stateParams, Stack, $firebaseObject, $state,$ionicScrollDelegate, $rootScope) {
+  $scope.formData = {};
   var ref = new Firebase("https://sandboxforms.firebaseio.com/data/0/");
   var data = $firebaseObject(ref);
-  data.$bindTo($scope, "formData");
+  data.$bindTo($scope, "formData").then(function(){
+    console.log($scope.formData);
+  });
   $scope.cards = Stack;
   $scope.phase = 0;
-  $scope.prev = null;
-  $scope.nextPage = function() {
-    $scope.prev = $scope.phase;
-    $scope.phase = $scope.phase + 1;
-  };
-  $scope.prevPage = function() {
-    $scope.phase = $scope.prev;
-  };
+  $state.go('stack.card', {'phase': 0});
+
+//   $rootScope.$on('card-loaded', function(event, args) {
+//     console.log("something happened");
+// });
+
 })
 
 .factory('Stack', [ /*'<dependency>', */ function() {

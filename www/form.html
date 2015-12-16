@@ -1,41 +1,13 @@
 <ion-view>
-  <ion-content id="contentelem">
-    <es-pullup on-refresh="" pulling-text="keep pulling"></es-pullup>
-    <form>
-      <div class="list list-inset" ng-repeat="card in cards" ng-show="card.id==phase">
 
-      <li class="item item-input" ng-class="{'item-select': i.type=='select', 'item-toggle': i.type == 'checkbox', 'item-icon-right': i.type == 'picture'||'location'} " ng-repeat="i in card.inputList">
-        <!-- adds title -->
-        <span class="input-label">{{i.label | titlecase}}:
-        </span>
+<form>
 
-        <!-- adds basic inputs -->
-        <input ng-if="i.type!='select' && i.type!='checkbox' && i.type!='picture' && i.type!='location'" ng-model="formData[i.name]" type="{{i.type}}">
+<ion-nav-view>
+</ion-nav-view>
 
-        <!-- add select inputs -->
-        <select ng-if="i.type=='select'">
-          <option ng-repeat="op in i.options">{{op}}</option>
-        </select>
-        <!-- add toggle inputs -->
-        <label class="toggle toggle-positive" ng-if="i.type=='checkbox'">
-          <input type="checkbox">
-          <div class="track">
-            <div class="handle"></div>
-          </div>
-        </label>
-        <!-- add picture & location icons -->
-        <i class="icon ion-ios-location" ng-if="i.type=='location'"></i>
-        <i class="icon ion-android-camera" ng-if="i.type=='picture'"></i>
-      </li>
-      <button class="button" ng-click="prevPage()" ng-if="prev || prev==0">Previous</button>
-      <button class="button" ng-click="nextPage()" ng-if="card.next">Next</button>
 
-    </div>
 
-  </form>
+</form>
 
-  {{formData}}
-
-</ion-content>
 
 </ion-view>
