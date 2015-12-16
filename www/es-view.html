@@ -1,0 +1,34 @@
+
+
+<ion-view>
+  <ion-content padding="true">
+        <es-pullup on-refresh="nextPage()"pulling-text="keep pulling"></es-pullup>
+    <div class="list list-inset">
+      <div class="">
+
+        <li class="item item-input" ng-repeat="i in card.inputList" ng-class="{'item-select': i.type=='select', 'item-toggle': i.type == 'checkbox', 'item-icon-right': i.type == 'picture'||'location'} ">
+          <span class="input-label">{{i.label | titlecase}}:
+          </span>
+
+          <input ng-if="i.type!='select' && i.type!='checkbox' && i.type!='picture' && i.type!='location'" ng-model="formData[i.name]" type="{{i.type}}">
+
+          <select ng-if="i.type=='select'">
+            <option ng-repeat="op in i.options">{{op}}</option>
+          </select>
+          <label class="toggle toggle-positive" ng-if="i.type=='checkbox'">
+            <input type="checkbox">
+            <div class="track">
+              <div class="handle"></div>
+            </div>
+          </label>
+          <i class="icon ion-ios-location" ng-if="i.type=='location'"></i>
+          <i class="icon ion-android-camera" ng-if="i.type=='picture'"></i>
+        </li>
+        <button class="button" ng-click="prevPage()" ng-if="prev || prev==0">Previous</button>
+        <button class="button" ng-click="nextPage()" ng-if="card.next">Next</button>
+
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>
