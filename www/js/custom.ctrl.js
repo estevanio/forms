@@ -6,7 +6,6 @@ isNumber = angular.isNumber,
 isString = angular.isString,
 jqLite = angular.element,
 noop = angular.noop;
-
 customModule
 .controller('pullupctrl', [
   '$scope',
@@ -35,21 +34,151 @@ customModule
       $attrs.$set('pullingIcon', 'ion-android-arrow-up');
     }
 
-    $scope.showSpinner = !isDefined($attrs.refreshingIcon) && $attrs.spinner != 'none';
+    $scope.showSpinner = !isDefined($attrs.pulledIcon) && $attrs.spinner != 'none';
 
-    $scope.showIcon = isDefined($attrs.refreshingIcon);
+    $scope.showIcon = isDefined($attrs.pulledIcon);
 
+    //this came from refesher, but we might not need it, let's do it more like infinite
     $ionicBind($scope, $attrs, {
-      pullingIcon: '@',
-      pullingText: '@',
-      refreshingIcon: '@',
-      pulledText: '@',
-      spinner: '@',
-      disablePullingRotation: '@',
-      $onRefresh: '&onRefresh',
-      $onPulling: '&onPulling'
+      pullingIcon: '@', //stays
+      pullingText: '@', //stays
+      pulledIcon: '@', //diditt
+      pulledText: '@', //mine
+      spinner: '@', //TODO:deprecate
+      disablePullingRotation: '@', //TODO: depracate
+      $onPulled: '&onPulled', //DIDIT
+      $onPulling: '&onPulling' //stay
     });
 
+//THIS IS INFINITE SHIT
+self.isLoading = false;
+self.isLoading = false;
+
+$scope.icon = function() {
+  return isDefined($attrs.icon) ? $attrs.icon : 'ion-load-d';
+};
+
+$scope.spinner = function() {
+  return isDefined($attrs.spinner) ? $attrs.spinner : '';
+};
+
+$scope.$on('scroll.infiniteScrollComplete', function() {
+  finishInfiniteScroll();
+});
+
+$scope.$on('$destroy', function() {
+  if (self.scrollCtrl && self.scrollCtrl.$element) self.scrollCtrl.$element.off('scroll', self.checkBounds);
+  if (self.scrollEl && self.scrollEl.removeEventListener) {
+    self.scrollEl.removeEventListener('scroll', self.checkBounds);
+  }
+});
+// debounce checking infinite scroll events
+  self.checkBounds = ionic.Utils.throttle(checkBounds, 300);
+
+  function onInfinite() {
+    console.log("infiniting");
+    ionic.requestAnimationFrame(function() {
+      $element[0].classList.add('active');
+    });
+    self.isLoading = true;
+    $scope.$parent && $scope.$parent.$apply($attrs.onInfinite || '');
+  }
+
+  function finishInfiniteScroll() {
+    console.log("finished infiniting");
+
+    ionic.requestAnimationFrame(function() {
+      $element[0].classList.remove('active');
+    });
+    $timeout(function() {
+      if (self.jsScrolling) self.scrollView.resize();
+      // only check bounds again immediately if the page isn't cached (scroll el has height)
+      if ((self.jsScrolling && self.scrollView.__container && self.scrollView.__container.offsetHeight > 0) ||
+      !self.jsScrolling) {
+        self.checkBounds();
+      }
+    }, 30, false);
+    self.isLoading = false;
+  }
+
+  // check if we've scrolled far enough to trigger an infinite scroll
+  function checkBounds() {
+    if (self.isLoading) return;
+    var maxScroll = {};
+
+    if (self.jsScrolling) {
+      maxScroll = self.getJSMaxScroll();
+      var scrollValues = self.scrollView.getValues();
+      if ((maxScroll.left !== -1 && scrollValues.left >= maxScroll.left) ||
+        (maxScroll.top !== -1 && scrollValues.top >= maxScroll.top)) {
+        onInfinite();
+      }
+    } else {
+      maxScroll = self.getNativeMaxScroll();
+      if ((
+        maxScroll.left !== -1 &&
+        self.scrollEl.scrollLeft >= maxScroll.left - self.scrollEl.clientWidth
+        ) || (
+        maxScroll.top !== -1 &&
+        self.scrollEl.scrollTop >= maxScroll.top - self.scrollEl.clientHeight
+        )) {
+        onInfinite();
+      }
+    }
+  }
+
+  // determine the threshold at which we should fire an infinite scroll
+  // note: this gets processed every scroll event, can it be cached?
+  self.getJSMaxScroll = function() {
+    var maxValues = self.scrollView.getScrollMax();
+    return {
+      left: self.scrollView.options.scrollingX ?
+        calculateMaxValue(maxValues.left) :
+        -1,
+      top: self.scrollView.options.scrollingY ?
+        calculateMaxValue(maxValues.top) :
+        -1
+    };
+  };
+
+  self.getNativeMaxScroll = function() {
+    var maxValues = {
+      left: self.scrollEl.scrollWidth,
+      top: self.scrollEl.scrollHeight
+    };
+    var computedStyle = window.getComputedStyle(self.scrollEl) || {};
+    return {
+      left: maxValues.left &&
+        (computedStyle.overflowX === 'scroll' ||
+        computedStyle.overflowX === 'auto' ||
+        self.scrollEl.style['overflow-x'] === 'scroll') ?
+        calculateMaxValue(maxValues.left) : -1,
+      top: maxValues.top &&
+        (computedStyle.overflowY === 'scroll' ||
+        computedStyle.overflowY === 'auto' ||
+        self.scrollEl.style['overflow-y'] === 'scroll' ) ?
+        calculateMaxValue(maxValues.top) : -1
+    };
+  };
+
+  // determine pixel refresh distance based on % or value
+  function calculateMaxValue(maximum) {
+    var distance = ($attrs.distance || '2.5%').trim();
+    var isPercent = distance.indexOf('%') !== -1;
+    return isPercent ?
+    maximum * (1 - parseFloat(distance) / 100) :
+    maximum - parseFloat(distance);
+  }
+
+
+
+
+
+
+//INFINITE SHIT END
+
+
+//THIS IS REFRESHING SHIT
     function handleTouchend() {
       console.log('handling touch end');
       // if this wasn't an overscroll, get out immediately
@@ -171,6 +300,7 @@ customModule
     }
 
     function setScrollLock(enabled) {
+      console.log(" fn setScrollLock");
       // set the scrollbar to be position:fixed in preparation to overscroll
       // or remove it so the app can be natively scrolled
       if (enabled) {
@@ -188,6 +318,7 @@ customModule
       }
     }
 
+    //TODO: refactor
     $scope.$on('scroll.refreshComplete', function() {
       // prevent the complete from firing before the scroll has started
       $timeout(function() {
@@ -204,8 +335,9 @@ customModule
       }, scrollTime);
     });
 
+    //ignore the error, its fine just funky
     function scrollTo(Y, duration, callback) {
-      console.log("scroll to launched");
+      console.log("fn scrollTo");
           // scroll animation loop w/ easing
           // credit https://gist.github.com/dezinezync/5487119
           var start = Date.now(),
@@ -275,15 +407,12 @@ customModule
 
     // DOM manipulation and broadcast methods shared by JS and Native Scrolling
     // getter used by JS Scrolling
-
-
     function activate() {
       console.log("activating");
       $element[0].classList.add('active');
       // launch the onpulling function set in the attributes
       $scope.$onPulling();
     }
-
     function deactivate() {
       console.log("deactivating");
       // give tail 150ms to finish
@@ -293,29 +422,23 @@ customModule
         if (activated) activated = false;
       }, 150);
     }
-
-
     function start() {
       console.log("starting");
       // TODO: we will be calling this "pulled"
       $element[0].classList.add('refreshing');
       // launch the onrefresh function set in the attributes
-      $scope.$onRefresh();
+      $scope.$onPulled();
     }
-
-    // it's ok
     function show() {
       console.log("showing");
       // make it visible
       $element[0].classList.remove('invisible');
     }
-    // it's ok
     function hide() {
       console.log("hideing");
       // make it invisible again
       $element[0].classList.add('invisible');
     }
-    //it's ok
     function tail() {
       console.log("tailing");
       // flips the arrow after it's been pulled enough, before it's been released
@@ -334,9 +457,7 @@ customModule
       };
     };
 
-    // for testing
-    self.__handleTouchmove = handleTouchmove;
-    self.__getScrollChild = function() { return scrollChild; };
-    self.__getScrollParent = function() { return scrollParent; };
+//REFRESHING SHIT END
+
   }
 ]);

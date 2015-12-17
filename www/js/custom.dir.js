@@ -4,6 +4,7 @@ customModule.directive('esPullup', [function() {
     replace: true,
     require: ['^?$ionicScroll', 'esPullup'],
     controller: 'pullupctrl',
+    scope: true,
     template:
     '<div class="scroll-pu invisible" collection-repeat-ignore>' +
       '<div class="ionic-refresher-content" ' +
@@ -14,7 +15,7 @@ customModule.directive('esPullup', [function() {
         '<div class="text-pulling" ng-bind-html="pullingText"></div>' +
         '<div class="icon-refreshing">' +
           '<ion-spinner ng-if="showSpinner" icon="{{spinner}}"></ion-spinner>' +
-          '<i ng-if="showIcon" class="icon {{refreshingIcon}}"></i>' +
+          '<i ng-if="showIcon" class="icon {{pulledIcon}}"></i>' +
         '</div>' +
         '<div class="text-refreshing" ng-bind-html="pulledText"></div>' +
       '</div>' +
@@ -46,13 +47,4 @@ customModule.directive('esPullup', [function() {
 
     }
   };
-}])
-.directive('esformview', [function() {
-
-
-return{
-templateUrl:'esview.html'
-
-};
-
 }]);
