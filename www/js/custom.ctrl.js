@@ -8,9 +8,9 @@ var customModule = angular.module('custom', ['ngAnimate', 'ngSanitize', 'ui.rout
     noop = angular.noop;
 customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBind', '$timeout',
     function($scope, $attrs, $element, $ionicBind, $timeout) {
-        console.log('CTRL:');
-        console.table($scope);
-        console.table($attrs);
+        // console.log('CTRL:');
+        //        console.table($scope);
+        //        console.table($attrs);
         var self = this,
             isDragging = false,
             isOverscrolling = false,
@@ -48,20 +48,23 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
         });
 
         //THIS IS INFINITE SHIT
+        //THIS IS INFINITE SHIT
+        //THIS IS INFINITE SHIT
+        //THIS IS INFINITE SHIT
+        //THIS IS INFINITE SHIT
         self.isLoading = false;
-        self.isLoading = false;
+        // $scope.icon = function() {
+        //     return isDefined($attrs.icon) ? $attrs.icon : 'ion-load-d';
+        // };
 
-        $scope.icon = function() {
-            return isDefined($attrs.icon) ? $attrs.icon : 'ion-load-d';
-        };
 
-        $scope.spinner = function() {
-            return isDefined($attrs.spinner) ? $attrs.spinner : '';
-        };
+        // $scope.spinner = function() {
+        //     return isDefined($attrs.spinner) ? $attrs.spinner : '';
+        // };
 
-        $scope.$on('scroll.infiniteScrollComplete', function() {
-            finishInfiniteScroll();
-        });
+        // $scope.$on('scroll.infiniteScrollComplete', function() {
+        //     finishInfiniteScroll();
+        // });
 
         $scope.$on('$destroy', function() {
             if (self.scrollCtrl && self.scrollCtrl.$element) self.scrollCtrl.$element.off('scroll', self.checkBounds);
@@ -83,7 +86,6 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
 
         function finishInfiniteScroll() {
             console.log("finished infiniting");
-
             ionic.requestAnimationFrame(function() {
                 $element[0].classList.remove('active');
             });
@@ -100,25 +102,19 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
 
         // check if we've scrolled far enough to trigger an infinite scroll
         function checkBounds() {
+            console.log("checkingbounds");
             if (self.isLoading) return;
             var maxScroll = {};
 
             if (self.jsScrolling) {
                 maxScroll = self.getJSMaxScroll();
                 var scrollValues = self.scrollView.getValues();
-                if ((maxScroll.left !== -1 && scrollValues.left >= maxScroll.left) ||
-                    (maxScroll.top !== -1 && scrollValues.top >= maxScroll.top)) {
+                if (maxScroll.top !== -1 && scrollValues.top >= maxScroll.top) {
                     onInfinite();
                 }
             } else {
                 maxScroll = self.getNativeMaxScroll();
-                if ((
-                        maxScroll.left !== -1 &&
-                        self.scrollEl.scrollLeft >= maxScroll.left - self.scrollEl.clientWidth
-                    ) || (
-                        maxScroll.top !== -1 &&
-                        self.scrollEl.scrollTop >= maxScroll.top - self.scrollEl.clientHeight
-                    )) {
+                if (maxScroll.top !== -1 && self.scrollEl.scrollTop >= maxScroll.top - self.scrollEl.clientHeight) {
                     onInfinite();
                 }
             }
@@ -167,13 +163,14 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
         }
 
 
-
-
-
-
+        //INFINITE SHIT END
+        //INFINITE SHIT END
+        //INFINITE SHIT END
         //INFINITE SHIT END
 
-
+        //THIS IS REFRESHING SHIT
+        //THIS IS REFRESHING SHIT
+        //THIS IS REFRESHING SHIT
         //THIS IS REFRESHING SHIT
         function handleTouchend() {
             console.log('handling touch end');
@@ -331,7 +328,6 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
             }, scrollTime);
         });
 
-        //ignore the error, its fine just funky
         function scrollTo(Y, duration, callback) {
             console.log("fn scrollTo");
             // scroll animation loop w/ easing
@@ -376,6 +372,21 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
             // start scroll loop
             ionic.requestAnimationFrame(scroll);
         }
+        var touchMoveEvent, touchEndEvent;
+        if (window.navigator.pointerEnabled) {
+            //touchStartEvent = 'pointerdown';
+            touchMoveEvent = 'pointermove';
+            touchEndEvent = 'pointerup';
+        } else if (window.navigator.msPointerEnabled) {
+            //touchStartEvent = 'MSPointerDown';
+            touchMoveEvent = 'MSPointerMove';
+            touchEndEvent = 'MSPointerUp';
+        } else {
+            //touchStartEvent = 'touchstart';
+            touchMoveEvent = 'touchmove';
+            touchEndEvent = 'touchend';
+        }
+
 
         self.init = function() {
             scrollParent = $element.parent().parent()[0];
@@ -442,7 +453,6 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
 
         function tail() {
             console.log("tailing");
-            // flips the arrow after it's been pulled enough, before it's been released
             $element[0].classList.add('refreshing-tail');
         }
         // returns activate, deactivate, start, show, hide, tail

@@ -1,6 +1,6 @@
 <ion-view>
     <ion-content padding="true">
-        <es-pullup pulling-text="keep pulling" on-pulling="" pulling-icon="" pulled-text='yooo' pulled-icon="ion-alert-circled" on-pulled="nextPage()">
+        <es-pullup pulling-text="keep pulling" on-pulling="" pulling-icon="ion-arrow-down-a" pulled-text='yooo' pulled-icon="ion-alert-circled" on-pulled="nextPage()">
         </es-pullup>
         <div class="list list-inset">
             <div class="">
@@ -23,5 +23,7 @@
                 <button class="button" ng-click="nextPage()" ng-if="card.next">Next</button>
             </div>
         </div>
+        <ion-infinite-scroll icon="ion-loading-c" distance="-10px" on-infinite="infinite()">
+        </ion-infinite-scroll>
     </ion-content>
 </ion-view>

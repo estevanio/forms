@@ -20,19 +20,19 @@ customModule.directive('esPullup', [function() {
             '</div>' +
             '</div>',
         link: function($scope, $element, $attrs, ctrls) {
-            console.log('DIRECTIVE:');
-            console.table($scope);
-            console.table($attrs);
+            // console.log('DIRECTIVE:');
+            // console.table($scope);
+            // console.table($attrs);
 
             // JS Scrolling uses the scroll controller
-            var scrollCtrl = ctrls[0],
-                puCtrl = ctrls[1];
-            if (!scrollCtrl || scrollCtrl.isNative()) {
-                // Kick off native scrolling
-                puCtrl.init();
-                console.log("native scrolling");
-            } else {
+            var puCtrl = ctrls[1];
+            var scrollCtrl = puCtrl.scrollCtrl = ctrls[0];
+            var jsScrolling = puCtrl.jsScrolling = !scrollCtrl.isNative();
+
+            if (jsScrolling) {
                 console.log("js scrolling");
+                puCtrl.scrollView = scrollCtrl.scrollView;
+                scrollCtrl.$element.on('scroll', puCtrl.checkBounds);
                 $element[0].classList.add('js-scrolling');
                 scrollCtrl._setRefresher(
                     $scope,
@@ -44,7 +44,19 @@ customModule.directive('esPullup', [function() {
                         scrollCtrl.scrollView.finishPullToRefresh();
                     });
                 });
-            }
+
+            } else {
+                puCtrl.init();
+                console.log("native scrolling");
+
+            };
+
+            $scope.$on('scroll.refreshComplete', function() {
+                $scope.$evalAsync(function() {
+                    scrollCtrl.scrollView.finishPullToRefresh();
+                });
+            });
+
 
         }
     };

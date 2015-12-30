@@ -28,18 +28,24 @@ angular.module('forms', ['ionic', 'firebase', 'custom'])
 
 .controller('CardCtrl', function($scope, $stateParams, $state, $rootScope, Stack) {
     $scope.card = Stack[$stateParams.phase];
-    console.log($stateParams.phase);
-    console.log($stateParams.phase);
+    $scope.infinite = function() {
+        console.log("infinite");
+    };
+    // console.log($stateParams.phase);
+    // console.log($stateParams.phase);
     $scope.nextPage = function() {
         $scope.$parent.prev = $scope.card.id;
+        $scope.$broadcast('scroll.refreshComplete');
         $state.go('stack.card', {
             'phase': $scope.card.next
         });
     };
     $scope.prevPage = function() {
+
         $state.go('stack.card', {
             'phase': $scope.$parent.prev
         });
+
     };
 
     // $rootScope.$broadcast('card-loaded');
@@ -53,7 +59,7 @@ angular.module('forms', ['ionic', 'firebase', 'custom'])
     var ref = new Firebase("https://sandboxforms.firebaseio.com/data/0/");
     var data = $firebaseObject(ref);
     data.$bindTo($scope, "formData").then(function() {
-        console.log($scope.formData);
+        // console.log($scope.formData);
     });
     $scope.cards = Stack;
     $scope.phase = 0;
