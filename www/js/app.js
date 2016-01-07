@@ -31,8 +31,6 @@ angular.module('forms', ['ionic', 'firebase', 'custom'])
     $scope.infinite = function() {
         console.log("infinite");
     };
-    // console.log($stateParams.phase);
-    // console.log($stateParams.phase);
     $scope.nextPage = function() {
         $scope.$parent.prev = $scope.card.id;
         $scope.$broadcast('scroll.refreshComplete');
@@ -48,7 +46,6 @@ angular.module('forms', ['ionic', 'firebase', 'custom'])
 
     };
 
-    // $rootScope.$broadcast('card-loaded');
 
 
 })

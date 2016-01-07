@@ -17,13 +17,13 @@
                         </div>
                     </label>
                     <i class="icon ion-ios-location" ng-if="i.type=='location'"></i>
-                    <i class="icon ion-android-camera" ng-if="i.type=='picture'"></i>
+                    <button class="button button-icon icon ion-android-camera" ng-click="" ng-if="i.type=='picture'">
+                    </button>
                 </li>
                 <button class="button" ng-click="prevPage()" ng-if="prev || prev==0">Previous</button>
                 <button class="button" ng-click="nextPage()" ng-if="card.next">Next</button>
             </div>
         </div>
-        <ion-infinite-scroll icon="ion-loading-c" distance="-10px" on-infinite="infinite()">
-        </ion-infinite-scroll>
+        {{formData | json}}
     </ion-content>
 </ion-view>
