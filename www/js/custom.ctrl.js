@@ -52,7 +52,6 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
         //THIS IS INFINITE SHIT
         //THIS IS INFINITE SHIT
         //THIS IS INFINITE SHIT
-        self.isLoading = false;
         // $scope.icon = function() {
         //     return isDefined($attrs.icon) ? $attrs.icon : 'ion-load-d';
         // };
@@ -97,21 +96,28 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
                     self.checkBounds();
                 }
             }, 30, false);
-            self.isLoading = false;
         }
 
         // check if we've scrolled far enough to trigger an infinite scroll
         function checkBounds() {
             console.log("checkingbounds");
-            if (self.isLoading) return;
             var maxScroll = {};
 
             if (self.jsScrolling) {
                 maxScroll = self.getJSMaxScroll();
                 var scrollValues = self.scrollView.getValues();
-                if (maxScroll.top !== -1 && scrollValues.top >= maxScroll.top) {
-                    onInfinite();
+                if (maxScroll.top !== -1 && scrollValues.top > maxScroll.top && scrollValues.top < maxScroll.top + puHeight) {
+                    deactivate();
+                    show();
+                    console.log("deeeh");
+                } else if (maxScroll.top !== -1 && scrollValues.top > maxScroll.top && scrollValues.top >= maxScroll.top + puHeight) {
+                    activate();
+                    console.log("ready");
+                } else if (maxScroll.top !== -1 && scrollValues.top > maxScroll.top && scrollValues.top < maxScroll.top + puHeight) {} else if (maxScroll.top !== -1 && scrollValues.top == maxScroll.top) {
+                    deactivate();
+                    hide();
                 }
+
             } else {
                 maxScroll = self.getNativeMaxScroll();
                 if (maxScroll.top !== -1 && self.scrollEl.scrollTop >= maxScroll.top - self.scrollEl.clientHeight) {
@@ -172,116 +178,121 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
         //THIS IS REFRESHING SHIT
         //THIS IS REFRESHING SHIT
         //THIS IS REFRESHING SHIT
-        function handleTouchend() {
-            console.log('handling touch end');
-            // if this wasn't an overscroll, get out immediately
-            if (!canOverscroll && !isDragging) {
-                return;
-            }
-            // reset Y
-            startY = null;
-            // the user has overscrolled but went back to native scrolling
-            if (!isDragging) {
-                dragOffset = 0;
-                isOverscrolling = false;
-                setScrollLock(false);
-            } else {
-                isDragging = false;
-                dragOffset = 0;
+        // function handleTouchend() {
+        //     console.log('handling touch end');
+        //     // if this wasn't an overscroll, get out immediately
+        //     if (!canOverscroll && !isDragging) {
+        //         return;
+        //     }
+        //     // reset Y
+        //     startY = null;
+        //     // the user has overscrolled but went back to native scrolling
+        //     if (!isDragging) {
+        //         dragOffset = 0;
+        //         isOverscrolling = false;
+        //         setScrollLock(false);
+        //     } else {
+        //         isDragging = false;
+        //         dragOffset = 0;
 
-                // the user has scrolled far enough to trigger a refresh
-                if (lastOverscroll > ptrThreshold) {
-                    console.log("lastovescroll");
-                    start();
-                    scrollTo(ptrThreshold, scrollTime);
+        //         // the user has scrolled far enough to trigger a refresh
+        //         if (lastOverscroll > ptrThreshold) {
+        //             console.log("lastovescroll");
+        //             start();
+        //             scrollTo(ptrThreshold, scrollTime);
 
-                    // the user has overscrolled but not far enough to trigger a refresh
-                } else {
-                    scrollTo(0, scrollTime, deactivate);
-                    isOverscrolling = false;
-                }
-            }
-        }
+        //             // the user has overscrolled but not far enough to trigger a refresh
+        //         } else {
+        //             scrollTo(0, scrollTime, deactivate);
+        //             isOverscrolling = false;
+        //         }
+        //     }
+        // }
 
-        function handleTouchmove(e) {
-            console.log('handling touch move');
-            // if multitouch or regular scroll event, get out immediately
-            if (!canOverscroll || e.touches.length > 1) {
-                return;
-            }
-            //if this is a new drag, keep track of where we start
-            if (startY === null) {
-                startY = parseInt(e.touches[0].screenY, 10);
-            }
+        // [NATIVE]
+        // function handleTouchmove(e) {
+        //     console.log('handling touch move');
+        //     // if multitouch or regular scroll event, get out immediately
+        //     if (!canOverscroll || e.touches.length > 1) {
+        //         return;
+        //     }
+        //     //if this is a new drag, keep track of where we start
+        //     if (startY === null) {
+        //         startY = parseInt(e.touches[0].screenY, 10);
+        //     }
 
-            // kitkat fix for touchcancel events http://updates.html5rocks.com/2014/05/A-More-Compatible-Smoother-Touch
-            if (ionic.Platform.isAndroid() && ionic.Platform.version() === 4.4 && scrollParent.scrollTop === 0) {
-                isDragging = true;
-                e.preventDefault();
-            }
+        //     // kitkat fix for touchcancel events http://updates.html5rocks.com/2014/05/A-More-Compatible-Smoother-Touch
+        //     if (ionic.Platform.isAndroid() && ionic.Platform.version() === 4.4 && scrollParent.scrollTop === 0) {
+        //         isDragging = true;
+        //         e.preventDefault();
+        //     }
 
-            // how far have we dragged so far?
-            deltaY = parseInt(e.touches[0].screenY, 10) - startY;
-            console.log(deltaY);
-            //do some rewriting in here because we our stuff is irrelvant of the top overscrolling
-            if (deltaY - dragOffset <= 0 || scrollParent.scrollTop !== 0) {
-                // if we've dragged up and back down in to native scroll territory
-                if (isOverscrolling) {
-                    isOverscrolling = false;
-                    setScrollLock(false);
-                }
+        //     // how far have we dragged so far?
+        //     deltaY = parseInt(e.touches[0].screenY, 10) - startY;
+        //     console.log(deltaY);
+        //     //do some rewriting in here because we our stuff is irrelvant of the top overscrolling
+        //     if (deltaY - dragOffset <= 0 || scrollParent.scrollTop !== 0) {
+        //         // if we've dragged up and back down in to native scroll territory
+        //         if (isOverscrolling) {
+        //             isOverscrolling = false;
+        //             setScrollLock(false);
+        //         }
 
-                if (isDragging) {
-                    console.log("dragging");
-                    nativescroll(scrollParent, parseInt(deltaY - dragOffset, 10) * -1);
-                }
+        //         if (isDragging) {
+        //             console.log("dragging");
+        //             nativescroll(scrollParent, parseInt(deltaY - dragOffset, 10) * -1);
+        //         }
 
-                // if we're not at overscroll 0 yet, 0 out
-                if (lastOverscroll !== 0) {
-                    overscroll(0);
-                }
-                return;
+        //         // if we're not at overscroll 0 yet, 0 out
+        //         if (lastOverscroll !== 0) {
+        //             overscroll(0);
+        //         }
+        //         return;
 
-            } else if (deltaY > 0 && scrollParent.scrollTop === 0 && !isOverscrolling) {
-                // starting overscroll, but drag started below scrollTop 0, so we need to offset the position
-                dragOffset = deltaY;
-            }
+        //     } else if (deltaY > 0 && scrollParent.scrollTop === 0 && !isOverscrolling) {
+        //         // starting overscroll, but drag started below scrollTop 0, so we need to offset the position
+        //         dragOffset = deltaY;
+        //     }
 
-            // prevent native scroll events while overscrolling
-            e.preventDefault();
+        //     // prevent native scroll events while overscrolling
+        //     e.preventDefault();
 
-            // if not overscrolling yet, initiate overscrolling
-            if (!isOverscrolling) {
-                isOverscrolling = true;
-                setScrollLock(true);
-            }
+        //     // if not overscrolling yet, initiate overscrolling
+        //     if (!isOverscrolling) {
+        //         isOverscrolling = true;
+        //         setScrollLock(true);
+        //     }
 
-            isDragging = true;
-            // overscroll according to the user's drag so far
-            overscroll(parseInt((deltaY - dragOffset) / 3, 10));
+        //     isDragging = true;
+        //     // overscroll according to the user's drag so far
+        //     overscroll(parseInt((deltaY - dragOffset) / 3, 10));
 
-            // update the icon accordingly
-            if (!activated && lastOverscroll > ptrThreshold) {
-                activated = true;
-                ionic.requestAnimationFrame(activate);
+        //     // update the icon accordingly
+        //     if (!activated && lastOverscroll > ptrThreshold) {
+        //         activated = true;
+        //         ionic.requestAnimationFrame(activate);
 
-            } else if (activated && lastOverscroll < ptrThreshold) {
-                activated = false;
-                ionic.requestAnimationFrame(deactivate);
-            }
-        }
+        //     } else if (activated && lastOverscroll < ptrThreshold) {
+        //         activated = false;
+        //         ionic.requestAnimationFrame(deactivate);
+        //     }
+        // }
 
-        function handleScroll(e) {
-            console.log("handling scroll");
-            // canOverscroll is used to greatly simplify the drag handler during normal scrolling
-            canOverscroll = (e.target.scrollTop === 0) || isDragging;
-        }
 
-        function overscroll(val) {
-            console.log(val);
-            scrollChild.style[ionic.CSS.TRANSFORM] = 'translateY(' + val + 'px)';
-            lastOverscroll = val;
-        }
+        // [NATIVE]
+        // function handleScroll(e) {
+        //     console.log("handling scroll");
+        //     // canOverscroll is used to greatly simplify the drag handler during normal scrolling
+        //     canOverscroll = (e.target.scrollTop === 0) || isDragging;
+        // }
+
+        // [NATIVE]
+        // function overscroll(val) {
+        //     console.log(val);
+        //     scrollChild.style[ionic.CSS.TRANSFORM] = 'translateY(' + val + 'px)';
+        //     lastOverscroll = val;
+        // }
+
 
         function nativescroll(target, newScrollTop) {
             console.log('fn nativescroll');
@@ -415,7 +426,8 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
         // DOM manipulation and broadcast methods shared by JS and Native Scrolling
         // getter used by JS Scrolling
         function activate() {
-            console.log("activating");
+            console.log("ACTIVATING");
+            self.scrollView.__refreshActive = true;
             $element[0].classList.add('active');
             // launch the onpulling function set in the attributes
             $scope.$onPulling();
@@ -423,6 +435,7 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
 
         function deactivate() {
             console.log("deactivating");
+            self.scrollView.__refreshActive = false;
             // give tail 150ms to finish
             $timeout(function() {
                 // deactivateCallback
@@ -459,15 +472,14 @@ customModule.controller('pullupctrl', ['$scope', '$attrs', '$element', '$ionicBi
         self.getRefresherDomMethods = function() {
             console.log('getting refresher dom methods');
             return {
-                activate: activate,
-                deactivate: deactivate,
+                activate: function() {},
+                deactivate: function() {},
                 start: start,
                 show: show,
-                hide: hide,
+                hide: function() {},
                 tail: tail
             };
         };
-
         //REFRESHING SHIT END
 
     }
