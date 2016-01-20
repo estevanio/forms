@@ -53,11 +53,25 @@ angular.module('forms', ['ionic', 'firebase', 'custom'])
 
 .controller('FormCtrl', function($scope, $stateParams, Stack, $firebaseObject, $state, $ionicScrollDelegate, $rootScope) {
     $scope.formData = {};
-    var ref = new Firebase("https://sandboxforms.firebaseio.com/data/0/");
+    $scope.indexData = {};
+    var ref = new Firebase("https://sandboxforms.firebaseio.com/data/form/");
     var data = $firebaseObject(ref);
+    var ref1 = new Firebase("https://sandboxforms.firebaseio.com/data/index/");
+    var indx = $firebaseObject(ref1);
+
+
     data.$bindTo($scope, "formData").then(function() {
-        // console.log($scope.formData);
+
+
     });
+    ref.on("value", function(snapshot) {
+
+        indx.data = snapshot.val();
+        indx.$save();
+
+    });
+    indx.$value = $scope.formData;
+    indx.$save();
     $scope.cards = Stack;
     $scope.phase = 0;
     $state.go('stack.card', {
